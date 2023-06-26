@@ -26,6 +26,26 @@
   flex: 0.8;
 }
 
+.payment_address {
+  margin-left: 15px;
+}
+
 .payment_details {
   flex: 0.8;
+}
+
+.payment_priceContainer > button {
+  background-color: goldenrod;
+  padding: 3px 5px;
+  border: 1px solid;
+  border-color: goldenrod;
+  border-radius: 2px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: all 0.13s ease-in-out;
+}
+
+.payment_priceContainer > button:hover {
+  transform: scale(1.1);
+  cursor: pointer;
 }
