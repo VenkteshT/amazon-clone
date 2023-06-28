@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import style from "./header.module.css";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { stateSelector } from "../../redux/slice";
 import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
+import { actions } from "../../redux/slice";
+import defaultProducts from "../../products";
+
 // icons
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+const { searchItem, setItem } = actions;
+
 // destructing classes from style object
 const {
   header,
@@ -21,6 +28,7 @@ const {
   header_serachIcon,
   header_optionBasket,
   header_basketCount,
+  searching_items,
 } = style;
 
 // logo
@@ -28,14 +36,57 @@ const img_url = "http://pngimg.com/uploads/amazon/amazon_PNG11.png";
 
 // main function
 export default function Header() {
-  const { basket, user } = useSelector(stateSelector);
+  const { products, basket, user, searchableItem } = useSelector(stateSelector);
+  const [searchingItems, setSearchingItems] = useState([]);
+  const [items, setItems] = useState([]);
+  const [value, setValue] = useState("");
+  const [id, setId] = useState("");
+  //
+  useEffect(() => {
+    setItems([...products, ...defaultProducts]);
+  }, []);
 
   //
+  const dispatch = useDispatch();
+
+  //
+  const navigate = useNavigate();
+  //
+  const has = (str) => {
+    return str.toLowerCase().includes(searchableItem.toLowerCase());
+  };
+  //
+  useEffect(() => {
+    if (!searchableItem) {
+      setSearchingItems([]);
+      return;
+    } else {
+      setSearchingItems([
+        ...defaultProducts.filter((el) => has(el.title)),
+        ...products.filter((el) => has(el.title)),
+      ]);
+    }
+  }, [searchableItem]);
+
   const handleAuth = () => {
     if (user) {
       signOut(auth);
     }
   };
+  //
+  const handleSearch = () => {
+    setSearchingItems([]);
+    let item = items.find((el) => el.id == id);
+    console.log(item);
+    item = {
+      ...item,
+      image: item.image || item.images[0],
+    };
+    dispatch(setItem({ item }));
+    navigate("/detail");
+  };
+
+  //
   return (
     <div className={header}>
       <Link to={"/"}>
@@ -43,8 +94,40 @@ export default function Header() {
       </Link>
 
       <div className={header_search}>
-        <input type="text" name="" id="" className={header_searchInput} />
-        <SearchRoundedIcon className={header_serachIcon} />
+        <input
+          type="text"
+          name=""
+          id=""
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            dispatch(searchItem({ data: e.target.value }));
+          }}
+          className={header_searchInput}
+        />
+        <span onClick={handleSearch}>
+          <SearchRoundedIcon className={header_serachIcon} />
+        </span>
+
+        {searchingItems.length ? (
+          <div className={searching_items}>
+            {searchingItems.map((el) => (
+              <p
+                key={el.id}
+                value={el.title}
+                onClick={() => {
+                  setValue(el.title);
+                  setId(el.id);
+                  setSearchingItems([]);
+                }}
+              >
+                {el.title}
+              </p>
+            ))}
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       <div className={header_nav}>
         <Link to={user ? "/" : "/login"}>

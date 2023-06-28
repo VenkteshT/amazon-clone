@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import "./login.css";
 import { Link } from "@mui/material";
-import { auth, db } from "../../firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { auth } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 // logo url
 const img_url = `https://upload.wikimedia.org/wikipedia/commons/
 thumb/a/a9/Amazon_logo.svg/1024px-Amazon_logo.svg.png`;
@@ -20,25 +18,18 @@ export default function Login() {
   //   signin
   const signIn = (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password).then((auth) => {
-      if (auth) {
-        navigate("/");
-        return;
-      }
-    });
-  };
-
-  //   register
-  const register = (e) => {
-    e.preventDefault();
-    createUserWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then((auth) => {
         if (auth) {
           navigate("/");
+          return;
         }
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        toast.error(err.message, { autoClose: 2500 });
+      });
   };
+
   return (
     <div className="login">
       <Link to={"/"}>
@@ -72,7 +63,10 @@ export default function Login() {
           Please see our Privacy Notice, our Cookies Notice and our
           Interest-Based Ads Notice.
         </p>
-        <button className="login_registerButton" onClick={register}>
+        <button
+          className="login_registerButton"
+          onClick={() => navigate("/signup")}
+        >
           Create you Amazon Account
         </button>
       </div>

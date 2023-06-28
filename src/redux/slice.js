@@ -1,15 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  products: [],
   basket: [],
   user: null,
   orders: [],
+  searchableItem: null,
+  itemDetails: {},
 };
 
 const slice = createSlice({
   name: "amazon-state-slice",
   initialState,
   reducers: {
+    setProducts(state, action) {
+      const { products } = action.payload;
+      state.products = [...products];
+    },
     addToBasket(state, action) {
       const { item } = action.payload;
       const findItem = state.basket.find((el) => el.id === item.id);
@@ -39,13 +46,17 @@ const slice = createSlice({
       const { user } = action.payload;
       state.user = user;
     },
-    setItem(state, action) {
-      const { item } = action.payload;
-      state.itemDetail = { ...item };
-    },
     clearBasket(state, action) {
       state.orders = [...state.orders, ...state.basket];
       state.basket = [];
+    },
+    setItem(state, action) {
+      const { item } = action.payload;
+      state.itemDetails = { ...item };
+    },
+    searchItem(state, action) {
+      const { data } = action.payload;
+      state.searchableItem = data;
     },
   },
 });

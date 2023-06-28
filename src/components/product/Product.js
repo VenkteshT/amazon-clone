@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import style from "./product.module.css";
 import { useDispatch } from "react-redux";
 import { actions } from "../../redux/slice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const { addToBasket, setItem } = actions;
 // destructre classess from style object
 const { product, product_info, product_price, product_rating, product_title } =
@@ -12,13 +12,20 @@ const { product, product_info, product_price, product_rating, product_title } =
 const ratings = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"];
 
 // main function
-export default function Product({ id, title, price, image, rating }) {
+export default function Product({
+  id,
+  title,
+  price,
+  image,
+  rating,
+  description,
+}) {
   //
   rating = rating > 5 ? 5 : rating;
   const [adding, setAdding] = useState(false);
   //
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   //
   const itemDetail = () => {
     let item = {
@@ -27,8 +34,10 @@ export default function Product({ id, title, price, image, rating }) {
       price,
       image,
       rating,
+      description,
     };
     dispatch(setItem({ item }));
+    navigate("/detail");
   };
   //
   const handleClick = () => {
@@ -58,7 +67,7 @@ export default function Product({ id, title, price, image, rating }) {
         </div>
       </div>
 
-      <img src={image} alt="" />
+      <img src={image} alt="" onClick={itemDetail} />
 
       <button onClick={handleClick} disabled={!adding ? false : true}>
         Add to Basket

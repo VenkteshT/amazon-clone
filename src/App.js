@@ -6,6 +6,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { stateSelector } from "./redux/slice";
 import Login from "./components/login/Login";
+import SignUp from "./components/singup/SignUp";
 import { useEffect, useState } from "react";
 import { auth } from "./firebase";
 import { actions } from "./redux/slice";
@@ -14,8 +15,10 @@ import Payment from "./components/payment/Payment";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Orders from "./components/orders/Orders";
-import { ToastContainer } from "react-toastify";
-const { setUser } = actions;
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Detail from "./components/productDetail/Detail";
+const { setUser, setProducts } = actions;
 
 const promise = loadStripe(
   `pk_test_51NM0iQSGOqRmeIbnFHCBqAQFXkplhQC8buvwvRvy7S3OAcOfjHOZSIrnMMkzO9m2GGvzXZb4yosXBX5f5mrdUdnn00lc1luMLt`
@@ -24,21 +27,19 @@ const promise = loadStripe(
 // main function
 function App() {
   //
-  const state = useSelector(stateSelector);
+  const { products } = useSelector(stateSelector);
 
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
 
   async function fetchProducts() {
     const respnse = await fetch("https://dummyjson.com/products");
     const data = await respnse.json();
-    setProducts([...data.products]);
+    dispatch(setProducts({ products: data.products }));
   }
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  //
-  const navigate = useNavigate();
   //
   const dispatch = useDispatch();
   useEffect(() => {
@@ -52,6 +53,7 @@ function App() {
   }, []);
   return (
     <div className="app">
+      <ToastContainer />
       <Routes>
         <Route
           path="/"
@@ -91,7 +93,17 @@ function App() {
             </>
           }
         />
+        <Route
+          path="/detail"
+          element={
+            <>
+              <Header />
+              <Detail />
+            </>
+          }
+        />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </div>
   );

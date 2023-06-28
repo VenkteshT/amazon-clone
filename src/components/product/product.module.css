@@ -26,6 +26,10 @@
   margin-bottom: 15px;
 }
 
+.product > img:hover {
+  cursor: pointer;
+}
+
 .product > button {
   background-color: #f0c14b;
   border: 1px solid;

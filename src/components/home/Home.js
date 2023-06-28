@@ -82,7 +82,8 @@ export default function Home({ products }) {
               <Product
                 key={product.id}
                 id={product.id}
-                title={product.description}
+                title={product.title}
+                description={product.description}
                 price={product.price}
                 rating={product.rating}
                 image={product.images[0]}
