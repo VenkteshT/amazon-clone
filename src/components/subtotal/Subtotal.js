@@ -4,6 +4,7 @@ import CurrencyFormat from "react-currency-format";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { stateSelector } from "../../redux/slice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 // destructure classes
 
 const { subtotal, subtotal_gift } = style;
@@ -23,14 +24,12 @@ export default function Subtotal() {
   const handleProceedToCheckout = () => {
     if (user) {
       if (basket.length == 0) {
-        alert(
-          `can't proceed with empty basket. please add some item to checkout`
-        );
+        toast.error(`basket is empty !`, { autoClose: 2000 });
         return;
       }
       navigate("/payment");
     } else {
-      alert(`Please Login to continue`);
+      toast.error(`Please login to continue`, { autoClose: 2000 });
     }
   };
   // main function

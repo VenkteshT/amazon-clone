@@ -15,9 +15,10 @@ import Payment from "./components/payment/Payment";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Orders from "./components/orders/Orders";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Detail from "./components/productDetail/Detail";
+import items from "./products";
 const { setUser, setProducts } = actions;
 
 const promise = loadStripe(
@@ -27,14 +28,10 @@ const promise = loadStripe(
 // main function
 function App() {
   //
-  const { products } = useSelector(stateSelector);
-
-  // const [products, setProducts] = useState([]);
-
   async function fetchProducts() {
     const respnse = await fetch("https://dummyjson.com/products");
     const data = await respnse.json();
-    dispatch(setProducts({ products: data.products }));
+    dispatch(setProducts({ products: [...items, ...data.products] }));
   }
   useEffect(() => {
     fetchProducts();
@@ -60,7 +57,7 @@ function App() {
           element={
             <>
               <Header />
-              <Home products={products} />
+              <Home products={[]} />
             </>
           }
         />

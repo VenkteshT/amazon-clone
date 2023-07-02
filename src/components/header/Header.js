@@ -6,13 +6,12 @@ import { stateSelector } from "../../redux/slice";
 import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
 import { actions } from "../../redux/slice";
-import defaultProducts from "../../products";
-
 // icons
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 const { searchItem, setItem } = actions;
 
 // destructing classes from style object
@@ -38,13 +37,8 @@ const img_url = "http://pngimg.com/uploads/amazon/amazon_PNG11.png";
 export default function Header() {
   const { products, basket, user, searchableItem } = useSelector(stateSelector);
   const [searchingItems, setSearchingItems] = useState([]);
-  const [items, setItems] = useState([]);
   const [value, setValue] = useState("");
   const [id, setId] = useState("");
-  //
-  useEffect(() => {
-    setItems([...products, ...defaultProducts]);
-  }, []);
 
   //
   const dispatch = useDispatch();
@@ -61,10 +55,7 @@ export default function Header() {
       setSearchingItems([]);
       return;
     } else {
-      setSearchingItems([
-        ...defaultProducts.filter((el) => has(el.title)),
-        ...products.filter((el) => has(el.title)),
-      ]);
+      setSearchingItems(products.filter((el) => has(el.title)));
     }
   }, [searchableItem]);
 
@@ -74,14 +65,24 @@ export default function Header() {
     }
   };
   //
-  const handleSearch = () => {
+  const handleSearch = (el) => {
+    if (!searchingItems.length) {
+      toast.error(`Opps Item is not present!`, {
+        autoClose: 2000,
+      });
+      return;
+    }
     setSearchingItems([]);
-    let item = items.find((el) => el.id == id);
-    console.log(item);
-    item = {
-      ...item,
-      image: item.image || item.images[0],
-    };
+    let item;
+    if (el) {
+      item = { ...el, image: el.image || el.images[0] };
+    } else {
+      item = products.find((el) => el.id == id);
+      item = {
+        ...item,
+        image: item.image || item.images[0],
+      };
+    }
     dispatch(setItem({ item }));
     navigate("/detail");
   };
@@ -118,6 +119,7 @@ export default function Header() {
                 onClick={() => {
                   setValue(el.title);
                   setId(el.id);
+                  handleSearch(el);
                   setSearchingItems([]);
                 }}
               >

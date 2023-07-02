@@ -9,6 +9,8 @@ import {
   product5,
   product6,
 } from "../../products";
+import { useSelector } from "react-redux";
+import { stateSelector } from "../../redux/slice";
 const { home, home_container, home_img, home_row, home_products } = style;
 
 // img url
@@ -19,7 +21,8 @@ GWBleedingHero_ENG_COVIDUPDATE__XSite_1500x
 600_PV_en-GB._CB428684220_.jpg`;
 
 // main function
-export default function Home({ products }) {
+export default function Home() {
+  const { products } = useSelector(stateSelector);
   return (
     <div className={home}>
       <div className={home_container}>
@@ -77,7 +80,7 @@ export default function Home({ products }) {
         </div>
 
         <div className={home_products}>
-          {products.map((product) => {
+          {products.slice(6).map((product) => {
             return (
               <Product
                 key={product.id}
@@ -86,7 +89,7 @@ export default function Home({ products }) {
                 description={product.description}
                 price={product.price}
                 rating={product.rating}
-                image={product.images[0]}
+                image={product.image || product.images[0]}
               />
             );
           })}
