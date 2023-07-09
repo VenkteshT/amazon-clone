@@ -21,6 +21,7 @@ export default function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then((auth) => {
         if (auth) {
+          toast.success(`Welcome ${auth.user?.email}`, { autoClose: 3500 });
           navigate("/");
           return;
         }
